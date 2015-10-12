@@ -31,7 +31,7 @@ class EqualsMethodTextCreatorTest extends Specification {
         def result = equalsMethodTextCreator.createMethodText([psiField], psiClass, equalsAndHashCodeType)
 
         then:
-        result == '@Override public boolean equals(Object obj) { if (this == obj) {return true;} ' +
+        result == '/** {@inheritDoc} */ @Override public boolean equals(Object obj) { if (this == obj) {return true;} ' +
                 'if (obj == null || getClass() != obj.getClass()) {return false;} ' +
                 'final Object other = (Object) obj; return Objects.equals(this.field, other.field);}'
     }
@@ -43,7 +43,7 @@ class EqualsMethodTextCreatorTest extends Specification {
         def result = equalsMethodTextCreator.createMethodText([psiField], psiClass, equalsAndHashCodeType)
 
         then:
-        result == '@Override public boolean equals(Object obj) { if (this == obj) {return true;} ' +
+        result == '/** {@inheritDoc} */ @Override public boolean equals(Object obj) { if (this == obj) {return true;} ' +
                 'if (obj == null || getClass() != obj.getClass()) {return false;} ' +
                 'final Object other = (Object) obj; return Objects.deepEquals(this.field, other.field);}'
     }
@@ -55,7 +55,7 @@ class EqualsMethodTextCreatorTest extends Specification {
         def result = equalsMethodTextCreator.createMethodText([psiField], psiClass, equalsAndHashCodeType)
 
         then:
-        result == '@Override public boolean equals(Object obj) { if (this == obj) {return true;} ' +
+        result == '/** {@inheritDoc} */ @Override public boolean equals(Object obj) { if (this == obj) {return true;} ' +
                 'if (obj == null || getClass() != obj.getClass()) {return false;} ' +
                 'if (!super.equals(obj)) {return false;} ' +
                 'final Object other = (Object) obj; return Objects.equals(this.field, other.field);}'
@@ -69,7 +69,7 @@ class EqualsMethodTextCreatorTest extends Specification {
         def result = equalsMethodTextCreator.createMethodText([psiField, psiField2], psiClass, equalsAndHashCodeType)
 
         then:
-        result == '@Override public boolean equals(Object obj) { if (this == obj) {return true;} ' +
+        result == '/** {@inheritDoc} */ @Override public boolean equals(Object obj) { if (this == obj) {return true;} ' +
                 'if (obj == null || getClass() != obj.getClass()) {return false;} ' +
                 'final Object other = (Object) obj; return Objects.equals(this.field, other.field)\n && Objects.equals(this.anotherField, other.anotherField);}'
     }

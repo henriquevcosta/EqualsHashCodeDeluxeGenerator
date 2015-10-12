@@ -9,7 +9,7 @@ import pl.mjedynak.idea.plugins.wizard.GenerateEqualsHashCodeDeluxeWizard
 @TypeChecked
 class GenerateEqualsHashCodeDeluxeWizardFactory {
 
-    GenerateEqualsHashCodeDeluxeWizard createWizard(Project project, PsiClass aClass, boolean needEquals, boolean needHashCode, EqualsAndHashCodeType type) {
-        new GenerateEqualsHashCodeDeluxeWizard(project, aClass, needEquals, needHashCode, type)
+    GenerateEqualsHashCodeDeluxeWizard createWizard(Project project, PsiClass aClass, boolean needEquals, boolean needHashCode, boolean needToString, EqualsAndHashCodeType type) {
+        new GenerateEqualsHashCodeDeluxeWizard(project, aClass, needEquals, needHashCode, needToString, type)
     }
 }

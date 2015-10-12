@@ -48,7 +48,7 @@ public class GenerateEqualsHashCodeDeluxeWizard extends AbstractWizard {
     private static final MyMemberInfoFilter MEMBER_INFO_FILTER = new MyMemberInfoFilter();
 
 
-    public GenerateEqualsHashCodeDeluxeWizard(Project project, PsiClass aClass, boolean needEquals, boolean needHashCode, EqualsAndHashCodeType type) {
+    public GenerateEqualsHashCodeDeluxeWizard(Project project, PsiClass aClass, boolean needEquals, boolean needHashCode, boolean needToString, EqualsAndHashCodeType type) {
         super(CodeInsightBundle.message("generate.equals.hashcode.wizard.title"), project, type);
         myClass = aClass;
 
@@ -114,6 +114,14 @@ public class GenerateEqualsHashCodeDeluxeWizard extends AbstractWizard {
     }
 
     public PsiField[] getHashCodeFields() {
+        if (myHashCodePanel != null) {
+            return memberInfosToFields(myHashCodePanel.getTable().getSelectedMemberInfos());
+        } else {
+            return null;
+        }
+    }
+
+    public PsiField[] getToStringFields() {
         if (myHashCodePanel != null) {
             return memberInfosToFields(myHashCodePanel.getTable().getSelectedMemberInfos());
         } else {

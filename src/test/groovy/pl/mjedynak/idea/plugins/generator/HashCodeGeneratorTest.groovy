@@ -32,7 +32,7 @@ class HashCodeGeneratorTest extends Specification {
         String fieldName = 'field'
         psiField.name >> fieldName
         String hashCodeMethodName = 'hash'
-        elementFactory.createMethodFromText('@Override public int hashCode() {return Objects.hash(field);}', null, LanguageLevel.JDK_1_6) >> psiMethod
+        elementFactory.createMethodFromText('/** {@inheritDoc} */ @Override public int hashCode() {return Objects.hash(field);}', null, LanguageLevel.JDK_1_6) >> psiMethod
 
         when:
         def result = hashCodeGenerator.hashCodeMethod([psiField], psiClass, hashCodeMethodName)
@@ -47,7 +47,7 @@ class HashCodeGeneratorTest extends Specification {
         psiField.name >> fieldName
         psiField2.name >> field2Name
         String hashCodeMethodName = 'hashCode'
-        elementFactory.createMethodFromText('@Override public int hashCode() {return Objects.hashCode(field,anotherField);}', null, LanguageLevel.JDK_1_6) >> psiMethod
+        elementFactory.createMethodFromText('/** {@inheritDoc} */ @Override public int hashCode() {return Objects.hashCode(field,anotherField);}', null, LanguageLevel.JDK_1_6) >> psiMethod
 
         when:
         def result = hashCodeGenerator.hashCodeMethod([psiField, psiField2], psiClass, hashCodeMethodName)
@@ -61,7 +61,7 @@ class HashCodeGeneratorTest extends Specification {
         String fieldName = 'field'
         psiField.name >> fieldName
         String hashCodeMethodName = 'hash'
-        elementFactory.createMethodFromText('@Override public int hashCode() {return 31 * super.hashCode() + Objects.hash(field);}', null, LanguageLevel.JDK_1_6) >> psiMethod
+        elementFactory.createMethodFromText('/** {@inheritDoc} */ @Override public int hashCode() {return 31 * super.hashCode() + Objects.hash(field);}', null, LanguageLevel.JDK_1_6) >> psiMethod
 
         when:
         def result = hashCodeGenerator.hashCodeMethod([psiField], psiClass, hashCodeMethodName)
@@ -71,7 +71,7 @@ class HashCodeGeneratorTest extends Specification {
     }
 
     def "creates hashCode method that returns 0 if list is empty"() {
-        elementFactory.createMethodFromText('@Override public int hashCode() {return 0;}', null, LanguageLevel.JDK_1_6) >> psiMethod
+        elementFactory.createMethodFromText('/** {@inheritDoc} */ @Override public int hashCode() {return 0;}', null, LanguageLevel.JDK_1_6) >> psiMethod
 
         when:
         def result = hashCodeGenerator.hashCodeMethod([], psiClass, 'anyString')

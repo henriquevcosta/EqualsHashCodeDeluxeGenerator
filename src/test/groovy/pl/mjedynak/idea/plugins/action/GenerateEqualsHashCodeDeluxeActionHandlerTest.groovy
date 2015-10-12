@@ -20,6 +20,8 @@ import com.intellij.psi.util.MethodSignature
 import pl.mjedynak.idea.plugins.factory.GenerateEqualsHashCodeDeluxeWizardFactory
 import pl.mjedynak.idea.plugins.generator.EqualsGenerator
 import pl.mjedynak.idea.plugins.generator.HashCodeGenerator
+import pl.mjedynak.idea.plugins.generator.ToStringGenerator
+import pl.mjedynak.idea.plugins.psi.ToStringMethodHelper
 import pl.mjedynak.idea.plugins.wizard.GenerateEqualsHashCodeDeluxeWizard
 import spock.lang.Specification
 
@@ -34,6 +36,7 @@ class GenerateEqualsHashCodeDeluxeActionHandlerTest extends Specification {
 
     GenerateEqualsHashCodeDeluxeActionHandler actionHandler
 
+    ToStringGenerator toStringGenerator = Mock()
     HashCodeGenerator hashCodeGenerator = Mock()
     EqualsGenerator equalsGenerator = Mock()
     GenerateEqualsHashCodeDeluxeWizardFactory factory = Mock()
@@ -44,29 +47,33 @@ class GenerateEqualsHashCodeDeluxeActionHandlerTest extends Specification {
     Editor editor = Mock()
     MethodSignature equalsMethodSignature = Mock()
     MethodSignature hashCodeMethodSignature = Mock()
+    MethodSignature toStringMethodSignature = Mock()
     PsiMethodImpl equalsMethod = Mock()
     PsiMethodImpl hashCodeMethod = Mock()
+    PsiMethodImpl toStringMethod = Mock()
     Application application = Mock()
     HintManager hintManager = Mock()
     GenerateEqualsHashCodeDeluxeWizard wizard = Mock()
     PsiField[] wizardEqualsFields = [Mock(PsiField)]
     PsiField[] wizardHashCodeFields = [Mock(PsiField)]
+    PsiField[] wizardToStringFields = [Mock(PsiField)]
     ClassMember classMember = Mock()
     ClassMember[] result
 
     def setup() {
-        actionHandler = new GenerateEqualsHashCodeDeluxeActionHandler(hashCodeGenerator, equalsGenerator, factory, typeChooser)
+        actionHandler = new GenerateEqualsHashCodeDeluxeActionHandler(hashCodeGenerator, equalsGenerator, toStringGenerator, factory, typeChooser)
 
         typeChooser.chooseType(psiClass) >> JAVA_7
 
         GenerateEqualsHelper.metaClass.static.getEqualsSignature = { Project project, GlobalSearchScope scope -> equalsMethodSignature }
         GenerateEqualsHelper.metaClass.static.getHashCodeSignature = { hashCodeMethodSignature }
+        ToStringMethodHelper.metaClass.static.toStringSignature = { toStringMethodSignature }
         GenerateEqualsHelper.metaClass.static.findMethod = { PsiClass psiClass, MethodSignature methodSignature -> null }
         CodeInsightBundle.metaClass.static.message = { String key -> 'anyString' }
         Messages.metaClass.static.getQuestionIcon = { Mock(Icon) }
         ApplicationManager.metaClass.static.getApplication = { application }
         HintManager.metaClass.static.getInstance = { hintManager }
-        factory.createWizard(project, psiClass, true, true, JAVA_7) >> wizard
+        factory.createWizard(project, psiClass, true, true, true, JAVA_7) >> wizard
     }
 
     def "does not display wizard when methods exist and user decides not to delete them"() {
@@ -175,10 +182,11 @@ class GenerateEqualsHashCodeDeluxeActionHandlerTest extends Specification {
         actionHandler.type = JAVA_7
         equalsGenerator.equalsMethod(null, psiClass, JAVA_7) >> equalsMethod
         hashCodeGenerator.hashCodeMethod(null, psiClass, JAVA_7.hashCodeMethodName()) >> hashCodeMethod
+        toStringGenerator.toStringMethod(null) >> toStringMethod
 
         def list = Mock(List)
         OverrideImplementUtil.metaClass.static.convert2GenerationInfos = { Collection collection ->
-            if (collection == [hashCodeMethod, equalsMethod]) {
+            if (collection == [hashCodeMethod, equalsMethod, toStringMethod]) {
                 return list
             }
             null

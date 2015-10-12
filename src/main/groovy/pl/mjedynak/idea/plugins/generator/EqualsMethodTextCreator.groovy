@@ -21,6 +21,7 @@ class EqualsMethodTextCreator {
 
     String createMethodText(List<PsiField> equalsPsiFields, PsiClass psiClass, EqualsAndHashCodeType equalsAndHashCodeType) {
         StringBuilder methodText = new StringBuilder()
+        methodText << '/** {@inheritDoc} */ '
         methodText << '@Override public boolean equals(Object obj) {'
         methodText << ' if (this == obj) {return true;}'
         methodText << ' if (obj == null || getClass() != obj.getClass()) {return false;}'

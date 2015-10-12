@@ -15,12 +15,12 @@ class GenerateEqualsHashCodeDeluxeWizardFactoryTest extends Specification {
     GenerateEqualsHashCodeDeluxeWizard mock = Mock()
 
     def setup() {
-        GenerateEqualsHashCodeDeluxeWizard.metaClass.constructor = { Project project, PsiClass aClass, boolean needEquals, boolean needHashCode, EqualsAndHashCodeType type -> mock }
+        GenerateEqualsHashCodeDeluxeWizard.metaClass.constructor = { Project project, PsiClass aClass, boolean needEquals, boolean needHashCode, boolean needsToString, EqualsAndHashCodeType type -> mock }
     }
 
     def "creates object using constructor"() {
         when:
-        GenerateEqualsHashCodeDeluxeWizard wizard = factory.createWizard(Mock(Project), Mock(PsiClass), true, true, JAVA_7)
+        GenerateEqualsHashCodeDeluxeWizard wizard = factory.createWizard(Mock(Project), Mock(PsiClass), true, true, true, JAVA_7)
 
         then:
         wizard == mock

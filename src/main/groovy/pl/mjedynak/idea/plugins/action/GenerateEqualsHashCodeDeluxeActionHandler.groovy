@@ -24,34 +24,42 @@ import com.intellij.util.IncorrectOperationException
 import pl.mjedynak.idea.plugins.factory.GenerateEqualsHashCodeDeluxeWizardFactory
 import pl.mjedynak.idea.plugins.generator.EqualsGenerator
 import pl.mjedynak.idea.plugins.generator.HashCodeGenerator
+import pl.mjedynak.idea.plugins.generator.ToStringGenerator
 import pl.mjedynak.idea.plugins.model.EqualsAndHashCodeType
+import pl.mjedynak.idea.plugins.psi.ToStringMethodHelper
 import pl.mjedynak.idea.plugins.wizard.GenerateEqualsHashCodeDeluxeWizard
 
 import static java.lang.String.format
 
 class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBase {
 
-    static final String METHODS_DEFINED_FOR_ANONYMOUS_CLASS = 'Methods "boolean equals(Object)" or "int hashCode()" are already defined \nfor this anonymous class. Do you want to delete them and proceed?'
-    static final String METHODS_DEFINED_FOR_CLASS = 'Methods "boolean equals(Object)" or "int hashCode()" are already defined\nfor class %s. Do you want to delete them and proceed?'
+    static final String METHODS_DEFINED_FOR_ANONYMOUS_CLASS = 'Methods "boolean equals(Object)", "int hashCode()" or "String toString()" are already defined \nfor this anonymous class. Do you want to delete them and proceed?'
+    static final String METHODS_DEFINED_FOR_CLASS = 'Methods "boolean equals(Object)", "int hashCode()" or "String toString()" are already defined\nfor class %s. Do you want to delete them and proceed?'
     static final String TITLE = 'generate.equals.and.hashcode.already.defined.title'
 
     static final PsiElementClassMember[] DUMMY_RESULT = new PsiElementClassMember[1] //cannot return empty array, but this result won't be used anyway
-    static final String ONLY_STATIC_FIELDS_ERROR = 'No fields to include in equals/hashCode have been found'
+    static final String ONLY_STATIC_FIELDS_ERROR = 'No fields to include in equals/hashCode/toString have been found'
 
     HashCodeGenerator hashCodeGenerator
     EqualsGenerator equalsGenerator
+    ToStringGenerator toStringGenerator
     TypeChooser typeChooser
     EqualsAndHashCodeType type
     GenerateEqualsHashCodeDeluxeWizardFactory factory
 
     PsiField[] equalsFields = null
     PsiField[] hashCodeFields = null
+    PsiField[] toStringFields = null
 
-    GenerateEqualsHashCodeDeluxeActionHandler(HashCodeGenerator hashCodeGenerator, EqualsGenerator equalsGenerator,
-                                              GenerateEqualsHashCodeDeluxeWizardFactory factory, TypeChooser typeChooser) {
+    GenerateEqualsHashCodeDeluxeActionHandler(HashCodeGenerator hashCodeGenerator,
+                                              EqualsGenerator equalsGenerator,
+                                              ToStringGenerator toStringGenerator,
+                                              GenerateEqualsHashCodeDeluxeWizardFactory factory,
+                                              TypeChooser typeChooser) {
         super('')
         this.hashCodeGenerator = hashCodeGenerator
         this.equalsGenerator = equalsGenerator
+        this.toStringGenerator = toStringGenerator
         this.typeChooser = typeChooser
         this.factory = factory
     }
@@ -61,8 +69,9 @@ class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBa
         String hashCodeMethodName = type.hashCodeMethodName()
         PsiMethod hashCodeMethod = hashCodeGenerator.hashCodeMethod(hashCodeFields as List, psiClass, hashCodeMethodName)
         PsiMethod equalsMethod = equalsGenerator.equalsMethod(equalsFields as List, psiClass, type)
+        PsiMethod toStringMethod = toStringGenerator.toStringMethod(toStringFields as List)
 
-        OverrideImplementUtil.convert2GenerationInfos([hashCodeMethod, equalsMethod])
+        OverrideImplementUtil.convert2GenerationInfos([hashCodeMethod, equalsMethod, toStringMethod])
     }
 
     @SuppressWarnings('ReturnsNullInsteadOfEmptyArray')
@@ -74,14 +83,16 @@ class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBa
         GlobalSearchScope scope = aClass.resolveScope
         PsiMethod equalsMethod = GenerateEqualsHelper.findMethod(aClass, GenerateEqualsHelper.getEqualsSignature(project, scope))
         PsiMethod hashCodeMethod = GenerateEqualsHelper.findMethod(aClass, GenerateEqualsHelper.hashCodeSignature)
+        PsiMethod toStringMethod = GenerateEqualsHelper.findMethod(aClass, ToStringMethodHelper.toStringSignature())
 
-        boolean equalsOrHashCodeExist = equalsExist(equalsMethod) || hashCodeExists(hashCodeMethod)
+        boolean methodsExist = equalsExist(equalsMethod) || hashCodeExists(hashCodeMethod) || toStringExists(toStringMethod)
         boolean needEquals = !equalsExist(equalsMethod)
         boolean needHashCode = !hashCodeExists(hashCodeMethod)
+        boolean needToString = !toStringExists(toStringMethod)
 
-        if (equalsOrHashCodeExist) {
+        if (methodsExist) {
             String text = chooseText(aClass)
-            if (shouldDeleteMethods(project, text) && methodsDeletedSuccessfully(equalsMethod, hashCodeMethod)) {
+            if (shouldDeleteMethods(project, text) && methodsDeletedSuccessfully(equalsMethod, hashCodeMethod, toStringMethod)) {
                 needEquals = needHashCode = true
             } else {
                 return null
@@ -92,7 +103,7 @@ class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBa
             return null
         }
 
-        GenerateEqualsHashCodeDeluxeWizard wizard = factory.createWizard(project, aClass, needEquals, needHashCode, typeChooser.chooseType(aClass))
+        GenerateEqualsHashCodeDeluxeWizard wizard = factory.createWizard(project, aClass, needEquals, needHashCode, needToString, typeChooser.chooseType(aClass))
 
         wizard.show()
         if (!wizard.isOK()) {
@@ -100,6 +111,7 @@ class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBa
         }
         equalsFields = wizard.equalsFields
         hashCodeFields = wizard.hashCodeFields
+        toStringFields = wizard.toStringFields
         type = wizard.type
         DUMMY_RESULT
     }
@@ -119,9 +131,9 @@ class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBa
         hasOnlyStaticFields
     }
 
-    private boolean methodsDeletedSuccessfully(PsiMethod equalsMethod, PsiMethod hashCodeMethod) {
+    private boolean methodsDeletedSuccessfully(PsiMethod equalsMethod, PsiMethod hashCodeMethod, PsiMethod toStringMethod) {
         Application application = ApplicationManager.application
-        application.runWriteAction(new DeleteExistingMethodsComputable(equalsMethod, hashCodeMethod))
+        application.runWriteAction(new DeleteExistingMethodsComputable(equalsMethod, hashCodeMethod, toStringMethod))
     }
 
     private boolean hashCodeExists(PsiMethod hashCodeMethod) {
@@ -130,6 +142,10 @@ class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBa
 
     private boolean equalsExist(PsiMethod equalsMethod) {
         equalsMethod != null
+    }
+
+    private boolean toStringExists(PsiMethod toStringMethod) {
+        toStringMethod != null
     }
 
     private boolean shouldDeleteMethods(Project project, String text) {
@@ -156,4 +172,9 @@ class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBa
     protected GenerationInfo[] generateMemberPrototypes(PsiClass psiClass, ClassMember classMember) {
         null
     }
+
+    //TODO
+//    private MethodSignature toStringHelperSignature() {
+//        return MethodSignatureUtil.createMethodSignature('toStringHelper', PsiType.EMPTY_ARRAY, PsiTypeParameter.EMPTY_ARRAY, PsiSubstitutor.EMPTY);
+//    }
 }

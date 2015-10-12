@@ -8,8 +8,9 @@ class DeleteExistingMethodsComputableTest extends Specification {
 
     PsiMethodImpl equalsMethod = Mock()
     PsiMethodImpl hashCodeMethod = Mock()
+    PsiMethodImpl toStringCodeMethod = Mock()
 
-    DeleteExistingMethodsComputable computable = new DeleteExistingMethodsComputable(equalsMethod, hashCodeMethod)
+    DeleteExistingMethodsComputable computable = new DeleteExistingMethodsComputable(equalsMethod, hashCodeMethod, toStringCodeMethod)
 
     def "deletes both methods and returns true"() {
         when:
@@ -23,7 +24,7 @@ class DeleteExistingMethodsComputableTest extends Specification {
 
     def "deletes method only if it is not null"() {
         hashCodeMethod = null
-        computable = new DeleteExistingMethodsComputable(equalsMethod, hashCodeMethod)
+        computable = new DeleteExistingMethodsComputable(equalsMethod, hashCodeMethod, toStringCodeMethod)
         when:
         boolean result = computable.compute()
 

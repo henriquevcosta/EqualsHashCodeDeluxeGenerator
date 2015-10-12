@@ -8,9 +8,12 @@ import pl.mjedynak.idea.plugins.factory.GenerateEqualsHashCodeDeluxeWizardFactor
 import pl.mjedynak.idea.plugins.generator.EqualsGenerator
 import pl.mjedynak.idea.plugins.generator.EqualsMethodTextCreator
 import pl.mjedynak.idea.plugins.generator.HashCodeGenerator
+import pl.mjedynak.idea.plugins.generator.ToStringGenerator
+import pl.mjedynak.idea.plugins.generator.ToStringMethodTextCreator
 import pl.mjedynak.idea.plugins.psi.EqualsMethodFinder
 import pl.mjedynak.idea.plugins.psi.HashCodeMethodFinder
 import pl.mjedynak.idea.plugins.psi.ParentClassChecker
+import pl.mjedynak.idea.plugins.psi.ToStringMethodFinder
 
 @SuppressWarnings('UnnecessaryObjectReferences')
 @CompileStatic
@@ -23,10 +26,13 @@ class GenerateEqualsHashCodeDeluxeAction extends BaseGenerateAction {
     static {
         picoContainer.registerComponentImplementation(EqualsMethodFinder)
         picoContainer.registerComponentImplementation(HashCodeMethodFinder)
+        picoContainer.registerComponentImplementation(ToStringMethodFinder)
         picoContainer.registerComponentImplementation(ParentClassChecker)
         picoContainer.registerComponentImplementation(EqualsMethodTextCreator)
+        picoContainer.registerComponentImplementation(ToStringMethodTextCreator)
         picoContainer.registerComponentImplementation(HashCodeGenerator)
         picoContainer.registerComponentImplementation(EqualsGenerator)
+        picoContainer.registerComponentImplementation(ToStringGenerator)
         picoContainer.registerComponentImplementation(TypeChooser)
         picoContainer.registerComponentImplementation(GenerateEqualsHashCodeDeluxeWizardFactory)
         picoContainer.registerComponentImplementation(GenerateEqualsHashCodeDeluxeActionHandler)

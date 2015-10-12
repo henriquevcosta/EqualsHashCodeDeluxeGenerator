@@ -24,7 +24,7 @@ class HashCodeGenerator {
 
     PsiMethod hashCodeMethod(@NotNull List<PsiField> hashCodePsiFields, PsiClass psiClass, String hashCodeMethodName) {
         StringBuilder methodText = new StringBuilder()
-        methodText << '@Override public int hashCode() {return '
+        methodText << '/** {@inheritDoc} */ @Override public int hashCode() {return '
         PsiElementFactory factory = getFactory(psiClass)
         if (hashCodePsiFields.empty) {
             methodText << '0;}'
