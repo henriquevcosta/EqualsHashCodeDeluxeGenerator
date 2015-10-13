@@ -6,8 +6,8 @@ apply from: 'idea.gradle'
 
 // --- properties ---
 ext.ideaInstallationPath = '/Applications/IntelliJ IDEA 14 CE.app/Contents'
-ext.ideaJdk = 'IC-141.1532.4'
-sourceCompatibility = 1.6
+ext.ideaJdk = 'IntelliJ IDEA Community Edition IC-141.1532.4'
+sourceCompatibility = 1.8
 // --- properties ---
 
 

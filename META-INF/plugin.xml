@@ -88,7 +88,8 @@
         <action id="GenerateEqualsHashCodeDeluxe"
                 class="pl.mjedynak.idea.plugins.action.GenerateEqualsHashCodeDeluxeAction"
                 text="equals() and hashCode() deluxe" description="Generate equals() and hashCode() methods">
-            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup1"/>
+            <!--<add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup1"/>-->
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
     </actions>
 

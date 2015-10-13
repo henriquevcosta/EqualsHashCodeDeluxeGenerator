@@ -23,10 +23,16 @@ class EqualsMethodTextCreator {
         StringBuilder methodText = new StringBuilder()
         methodText << '/** {@inheritDoc} */ '
         methodText << '@Override public boolean equals(Object obj) {'
-        methodText << ' if (this == obj) {return true;}'
-        methodText << ' if (obj == null || getClass() != obj.getClass()) {return false;}'
+        methodText << ' if (this == obj) { \n'
+        methodText << '   return true; \n'
+        methodText << ' }\n'
+        methodText << ' if (obj == null || getClass() != obj.getClass()) {\n'
+        methodText << '   return false;\n'
+        methodText << ' }\n'
         if (parentClassChecker.hasClassWithOverriddenMethodInInheritanceHierarchy(equalsMethodFinder, psiClass)) {
-            methodText << ' if (!super.equals(obj)) {return false;}'
+            methodText << ' if (!super.equals(obj)) {\n'
+            methodText << '   return false;\n'
+            methodText << ' }\n'
         }
         methodText << " final ${psiClass.name} other = (${psiClass.name}) obj;"
         methodText << ' return '

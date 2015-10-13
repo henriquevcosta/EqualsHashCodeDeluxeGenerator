@@ -7,7 +7,7 @@ import pl.mjedynak.idea.plugins.psi.ToStringMethodFinder
 /**
  * //TODO
  * @author Henrique Costa (henrique.costa@feedzai.com)
- * @since 15.1.0 //TODO
+ * @since 1.0.0
  */
 class ToStringMethodTextCreator {
 
@@ -23,13 +23,13 @@ class ToStringMethodTextCreator {
         StringBuilder methodText = new StringBuilder()
         methodText << '/** {@inheritDoc} */'
         methodText << '@Override public String toString() {'
-        methodText << ' MoreObjects.toStringHelper(this)'
+        methodText << ' return MoreObjects.toStringHelper(this)\n'
 //        if (parentClassChecker.hasClassWithOverriddenMethodInInheritanceHierarchy(equalsMethodFinder, psiClass)) {
 //            methodText << ' if (!super.equals(obj)) {return false;}'
 //        }
 
         psiFields.each { PsiField field ->
-                methodText << ".add(\"${field.name}\", this.${field.name})"
+                methodText << ".add(\"${field.name}\", this.${field.name})\n"
         }
         methodText << '.toString();}'
         methodText.toString()
