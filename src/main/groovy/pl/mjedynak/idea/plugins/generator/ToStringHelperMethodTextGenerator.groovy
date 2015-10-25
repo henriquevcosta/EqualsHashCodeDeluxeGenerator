@@ -3,25 +3,25 @@ package pl.mjedynak.idea.plugins.generator
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiField
 import pl.mjedynak.idea.plugins.psi.ParentClassChecker
-import pl.mjedynak.idea.plugins.psi.ToStringMethodFinder
+import pl.mjedynak.idea.plugins.psi.ToStringHelperMethodFinder
 
 /**
  * //TODO
  * @author Henrique Costa (henrique.costa@feedzai.com)
- * @since 1.0.0
+ * @since 15.1.0 //TODO
  */
-class ToStringMethodTextCreator {
+class ToStringHelperMethodTextGenerator {
 
     private ParentClassChecker parentClassChecker
-    private ToStringMethodFinder toStringMethodFinder
+    private ToStringHelperMethodFinder toStringHelperMethodFinder
 
-    ToStringMethodTextCreator(ParentClassChecker parentClassChecker, ToStringMethodFinder toStringMethodFinder) {
+    ToStringHelperMethodTextGenerator(ParentClassChecker parentClassChecker, ToStringHelperMethodFinder toStringHelperMethodFinder) {
         this.parentClassChecker = parentClassChecker
-        this.toStringMethodFinder = toStringMethodFinder
+        this.toStringHelperMethodFinder = toStringHelperMethodFinder
     }
 
     String createMethodText(List<PsiField> psiFields, PsiClass psiClass) {
-        if (parentClassChecker.hasClassWithOverriddenMethodInInheritanceHierarchy(toStringMethodFinder, psiClass)) {
+        if (parentClassChecker.hasClassWithOverriddenMethodInInheritanceHierarchy(toStringHelperMethodFinder, psiClass)) {
             return null;
         }
         StringBuilder methodText = new StringBuilder()
@@ -30,7 +30,7 @@ class ToStringMethodTextCreator {
         methodText << ' return MoreObjects.toStringHelper(this)\n'
 
         psiFields.each { PsiField field ->
-                methodText << ".add(\"${field.name}\", this.${field.name})\n"
+            methodText << ".add(\"${field.name}\", this.${field.name})\n"
         }
         methodText << '.toString();}'
         methodText.toString()

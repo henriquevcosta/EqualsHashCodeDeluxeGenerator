@@ -36,7 +36,7 @@ class EqualsMethodTextCreator {
         }
         methodText << " final ${psiClass.name} other = (${psiClass.name}) obj;"
         methodText << ' return '
-        equalsPsiFields.eachWithIndex { PsiField field, int index ->
+        equalsPsiFields.eachWithIndex { PsiField field, index ->
             if (isNotFirstField(index)) {
                 methodText << '\n && '
             }

@@ -69,7 +69,7 @@ class GenerateEqualsHashCodeDeluxeActionHandler extends GenerateMembersHandlerBa
         String hashCodeMethodName = type.hashCodeMethodName()
         PsiMethod hashCodeMethod = hashCodeGenerator.hashCodeMethod(hashCodeFields as List, psiClass, hashCodeMethodName)
         PsiMethod equalsMethod = equalsGenerator.equalsMethod(equalsFields as List, psiClass, type)
-        PsiMethod toStringMethod = toStringGenerator.toStringMethod(toStringFields as List)
+        PsiMethod toStringMethod = toStringGenerator.toStringMethod(toStringFields as List, psiClass)
 
         OverrideImplementUtil.convert2GenerationInfos([hashCodeMethod, equalsMethod, toStringMethod])
     }

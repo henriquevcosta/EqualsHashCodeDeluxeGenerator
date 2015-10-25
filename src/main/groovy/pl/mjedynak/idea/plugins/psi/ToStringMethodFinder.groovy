@@ -5,6 +5,12 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
 import groovy.transform.CompileStatic
 
+/**
+ * Helper class to determine if a superclass already overrides the toString method.
+ *
+ * @author Henrique Costa (henrique.costa@feedzai.com)
+ * @since 1.0.0
+ */
 @CompileStatic
 class ToStringMethodFinder implements MethodFinder {
     boolean hasMethod(PsiClass psiClass) {
@@ -28,5 +34,4 @@ class ToStringMethodFinder implements MethodFinder {
     private static boolean hasNoParameters(PsiMethod method) {
         method.parameterList?.parameters?.size() == 0
     }
-
 }
